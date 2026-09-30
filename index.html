@@ -1612,6 +1612,58 @@
         applyBackground();
         renderEmojiPicker();
         renderCalendar();
+
+        <script>
+    // === Регистрация Service Worker для PWA ===
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js', { scope: './' })
+                .then((registration) => {
+                    console.log('✅ Service Worker зарегистрирован:', registration.scope);
+                    
+                    // Проверяем обновления
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                // Есть новая версия — предлагаем обновиться
+                                if (confirm('Доступна новая версия приложения. Обновить сейчас?')) {
+                                    newWorker.postMessage({ type: 'SKIP_WAITING' });
+                                    window.location.reload();
+                                }
+                            }
+                        });
+                    });
+                })
+                .catch((error) => {
+                    console.log('❌ Ошибка регистрации SW:', error);
+                });
+        });
+
+        // Перезагружаем страницу при смене Service Worker
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (!refreshing) {
+                refreshing = true;
+                window.location.reload();
+            }
+        });
+    }
+
+    // === Установка PWA (кнопка "Установить") ===
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        // Показываем кнопку установки, если хочешь — добавь её в настройки
+        console.log('💡 Приложение можно установить');
+    });
+
+    window.addEventListener('appinstalled', () => {
+        console.log('🎉 Приложение установлено!');
+        deferredPrompt = null;
+    });
+</script>
     </script>
 </body>
 </html>
