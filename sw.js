@@ -1,6 +1,6 @@
 // === Service Worker для Календаря Репетитора ===
 // Версия кеша — увеличивай при обновлении, чтобы браузер подтянул новую версию
-const CACHE_NAME = 'tutor-calendar-v1.0.1';
+const CACHE_NAME = 'tutor-calendar-v1.0.2';
 
 // Файлы для кеширования при первой загрузке
 const PRECACHE_URLS = [
